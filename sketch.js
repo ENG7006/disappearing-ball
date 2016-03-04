@@ -84,6 +84,23 @@ var updateAndDisplay = function (ball) {
 	ball.display();
 };
 
+// checkBallsForDeletion() is also passed to balls.forEach() as a function to call with every element
+// unlike previous functions passed to forEach(), it accepts TWO arguments: ball, and ballIndex.
+// check out the documentation for JavaScript's Array.forEach() function (I'll wait while you google it)
+// the functions it receives (and calls) actually can receive THREE arguments: the element in the array, the index of that element, and the array that contains the element
+// because Array.splice() needs the INDEX of the element to be deleted, we need to accept that into our function as well
+var checkBallForDeletion = function (ball, ballIndex) {
+	var currentMousePosition = new p5.Vector(mouseX, mouseY);
+	if (ball.isInMe(currentMousePosition)) deleteBallAt(ballIndex);
+};
+
+// deleteBallAt(), meanwhile, takes the index of the ball to be deleted, and deletes it.
+// since it's one line of code, we could theoretically include it in checkBallForDeletion()
+// conceptually, however, it makes sense that testing for deletion and deletion are separate operations
+var deleteBallAt = function (ballIndex) {
+	balls.splice(ballIndex, 1);
+};
+
 setup = function () {
 
 	createCanvas(600, 600);
@@ -105,5 +122,5 @@ draw = function () {
 mousePressed = function () {
 
 	// code to test if the mouse location is inside any of the balls goes here
-
+	balls.forEach(checkBallForDeletion);
 };
