@@ -106,12 +106,18 @@ mousePressed = function () {
 	// code to test if the mouse location is inside any of the balls goes here
 	var currentMousePosition = new p5.Vector(mouseX, mouseY); // get a Vector for the current mouse position
 
-	// this is the basic looping version; it's not very robust, and may well lead to a rare bug.
-	// can you see it? it has to do with what happens to the ball immediately after the deleted ball in the array
+	// this is the robust looping version
+	// it creates an empty array and uses push() to copy the array, rather than splice() to delete something from it
+	// this is much slower, but it doesn't suffer from the bug the previous one had:
+	// skipping testing the ball immediately after a deleted ball
+	var newBalls = [];
 	for (var index = 0; index < balls.length; ++index) { // loop through the array
-		if (balls[index].isInMe(currentMousePosition)) { // test if the mouse is in the current ball
-			balls.splice(index, 1); // if it is, then splice the ball out
+		if (!balls[index].isInMe(currentMousePosition)) { // test if the mouse is NOT in the current ball
+			newBalls.push(balls[index]); // and if it is NOT, then add the current ball to the new array
 		}
 	}
+
+	// and then copy the new array into the array of balls
+	balls = newBalls;
 
 };
