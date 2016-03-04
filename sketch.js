@@ -103,7 +103,15 @@ draw = function () {
 };
 
 mousePressed = function () {
-
 	// code to test if the mouse location is inside any of the balls goes here
+	var currentMousePosition = new p5.Vector(mouseX, mouseY); // get a Vector for the current mouse position
+
+	// this is the basic looping version; it's not very robust, and may well lead to a rare bug.
+	// can you see it? it has to do with what happens to the ball immediately after the deleted ball in the array
+	for (var index = 0; index < balls.length; ++index) { // loop through the array
+		if (balls[index].isInMe(currentMousePosition)) { // test if the mouse is in the current ball
+			balls.splice(index, 1); // if it is, then splice the ball out
+		}
+	}
 
 };
