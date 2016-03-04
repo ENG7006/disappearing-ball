@@ -47,6 +47,8 @@ DisappearingBall.prototype = {
 		ellipse(this.position.x, this.position.y, this.radius, this.radius);
 	},
 
+	// isInMe() is relatively similar to the detectCollision() function we wrote together in Not Pacman.
+	// note that it takes a p5.Vector object as its argument; we will have to pass it one below
 	isInMe: function(thePosition) {
 		var distance = dist(this.position.x, this.position.y, thePosition.x, thePosition.y);
 		return (distance <= this.radius);
