@@ -72,6 +72,8 @@ var balls = [];
 
 var startingBalls = 30;
 
+var currentMousePosition; // current mouse position will be usefully stored outside any functions
+
 // initializeBall() and updateAndDisplay() are familiar
 // they are each passed to balls.forEach() as the function to call with every element of the array
 // the element in question is passed as the argument
@@ -84,23 +86,6 @@ var updateAndDisplay = function (ball) {
 	ball.display();
 };
 
-// checkBallsForDeletion() is also passed to balls.forEach() as a function to call with every element
-// unlike previous functions passed to forEach(), it accepts TWO arguments: ball, and ballIndex.
-// check out the documentation for JavaScript's Array.forEach() function (I'll wait while you google it)
-// the functions it receives (and calls) actually can receive THREE arguments: the element in the array, the index of that element, and the array that contains the element
-// because Array.splice() needs the INDEX of the element to be deleted, we need to accept that into our function as well
-var checkBallForDeletion = function (ball, ballIndex) {
-	var currentMousePosition = new p5.Vector(mouseX, mouseY);
-	if (ball.isInMe(currentMousePosition)) deleteBallAt(ballIndex);
-};
-
-// deleteBallAt(), meanwhile, takes the index of the ball to be deleted, and deletes it.
-// since it's one line of code, we could theoretically include it in checkBallForDeletion()
-// conceptually, however, it makes sense that testing for deletion and deletion are separate operations
-var deleteBallAt = function (ballIndex) {
-	balls.splice(ballIndex, 1);
-};
-
 setup = function () {
 
 	createCanvas(600, 600);
@@ -109,11 +94,15 @@ setup = function () {
 
 	balls.forEach(initializeBall);
 
+	currentMousePosition = new p5.Vector(mouseX, mouseY);
+
 };
 
 draw = function () {
 
 	background(0);
+
+	currentMousePosition.set(mouseX, mouseY); // update current mouse position
 
 	balls.forEach(updateAndDisplay);
 
@@ -121,6 +110,53 @@ draw = function () {
 
 mousePressed = function () {
 
-	// code to test if the mouse location is inside any of the balls goes here
-	balls.forEach(checkBallForDeletion);
+	// as with the looping method, in the functional method, the use of splice() can lead to skipped elements
+	// this is a more robust functional method
+
+	// in both cases, this means creating a new array without the elements we want, instead of deleting them in place
+
+	// there are, of course, multiple *functional* ways of doing this.
+	// I've written three below, in robustForEach(), inlineReduce(), and separateReduce()
+
+	// uncomment whichever line you'd like to test
+	//robustForEach();
+	robustFilter();
+
+};
+
+//This is the most straightforward functional method of deleting balls, using only tools we already have
+var robustForEach = function () {
+
+	// give ourselves an empty array
+	var newBalls = [];
+
+	// because we have created our new array in mousePressed(), we need to define the function forEach() will call here as well (i.e. we can't define it elsewhere for useful encapsulation, because then it won't have access to our shiny new array)
+	balls.forEach(function addUnclickedBalls(ball) { // for each ball...
+		// ...if the mouse isn't in it, then add it to the new array
+		if (!ball.isInMe(currentMousePosition)) newBalls.push(ball);
+	});
+
+	// and store our new, slightly lighter array
+	balls = newBalls;
+
+};
+
+// Another possibility is to use a different helper function on array, filter()
+// filter() returns a new array composed only of the elements of the array that pass a test
+// The test is a function which returns either true (truthy) or false (falsy)
+// In this branch, I have added a filter() function to SimpleArray.
+)
+var robustFilter = function () {
+
+	// because filter returns an array (composed of only the balls we want), we assign the returned array to the output of filter
+	balls = balls.filter(mouseIsNotInBall);
+
+};
+
+// mouseIsNotInBall() returns true if the mouse is NOT in the ball, and false if the mouse is in the ball
+var mouseIsNotInBall = function (ball) { // accepts the current element as the argument
+
+	// this is the opposite of isInMe(), so we have to negate it
+	return (!ball.isInMe(currentMousePosition)); // return true or false
+
 };

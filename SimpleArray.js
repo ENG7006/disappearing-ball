@@ -82,6 +82,24 @@ SimpleArray.prototype = {
       // function.call calls the function; its first argument is the "this context," and then subsequent arguments are the passed in as is
       _function.call(_this, this.array[index], index, this.array);
     }
+  },
+
+  // filter() takes a function as an argument, and calls that function, passing into that function three arguments:
+  // the element, the index of the element, and the array that contains the element at that index
+  // it takes a "this context" as well
+  // filter returns a new array composed of the elements which cause the function to return truthy
+  // notice that we return a new array rather than modifying the internal array
+  filter: function (_function, _this) {
+    var newArray = []; // create a new, empty array
+
+    for (var index = 0; index < this.array.length; ++index) { // loop through the array
+      // if the return value of the function is truthy... (passing element, index, array as with forEach())
+      if (_function.call(_this, this.array[index], index, this.array)) {
+        newArray.push(this.array[index]); // ... then add the element to the new array
+      }
+    }
+
+    return newArray; // and then return the new array
   }
 
 };
